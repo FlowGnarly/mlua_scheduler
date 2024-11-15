@@ -69,6 +69,17 @@ function task.wait(secs: number?)
 	wait(secs)
 end
 
+function task.delay(secs: number, f: thread | (...unknown) -> ...unknown, ...: unknown): thread
+	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
+
+	scheduler.args[thread] = { ... }
+
+	return task.defer(function()
+		task.wait(secs)
+		table.insert(scheduler.threads, thread)
+	end)
+end
+
 return {
 	task = task,
 	coroutine = {},
