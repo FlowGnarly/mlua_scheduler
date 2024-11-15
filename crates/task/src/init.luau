@@ -1,4 +1,5 @@
 --!strict
+local co_resume = coroutine.resume
 local scheduler = {
 	threads = {} :: { thread },
 	args = {} :: { [thread]: { unknown } },
@@ -30,7 +31,7 @@ function scheduler.runThread(thread: thread, ...: unknown): ()
 		return error("cannot resume dead coroutine", 0)
 	end
 
-	local success, result = coroutine.resume(thread, ...)
+	local success, result = co_resume(thread, ...)
 
 	if result == pending then
 		-- thread is still polling

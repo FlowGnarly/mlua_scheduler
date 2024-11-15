@@ -3,24 +3,28 @@ local task = task or require("@lune/task")
 
 local started = os.clock()
 
-local amount = 100000
+local amount = 1000
 local batches = 5
 local per_batch = amount / batches
 
+local threads = {}
 for current = 1, batches do
 	local thread = coroutine.running()
 
 	print(`Batch {current} / {batches}`)
 
 	for i = 1, per_batch do
-		task.spawn(function()
-			task.wait(0.1)
+		table.insert(
+			threads,
+			task.spawn(function()
+				task.wait(0.1)
 
-			if i == per_batch then
-				assert(coroutine.status(thread) == "suspended")
-				task.spawn(thread)
-			end
-		end)
+				if i == per_batch then
+					assert(coroutine.status(thread) == "suspended")
+					task.spawn(thread)
+				end
+			end)
+		)
 	end
 
 	coroutine.yield()
