@@ -47,6 +47,8 @@ function task.spawn(f: thread | (...unknown) -> ...unknown): thread
 	return thread
 end
 
+local printedResults: { thread } = {}
+
 return {
 	task = task,
 	coroutine = {},
@@ -54,6 +56,13 @@ return {
 	run = function(): boolean
 		for _, thread in scheduler.threads do
 			scheduler.runThread(thread)
+		end
+
+		for thread, result in scheduler.results do
+			if result.success == false and not table.find(printedResults, thread) then
+				table.insert(printedResults, thread)
+				print(result.msg)
+			end
 		end
 
 		return #scheduler.threads > 0
