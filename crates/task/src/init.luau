@@ -65,11 +65,17 @@ return {
 
 	run = function(): boolean
 		for _, thread in scheduler.threads do
+			local args: { unknown }?
+
 			if scheduler.args[thread] then
-				scheduler.runThread(thread, scheduler.args[thread])
 				scheduler.args[thread] = nil
-			else
-				scheduler.runThread(thread, scheduler.args[thread])
+				args = scheduler.args[thread]
+			end
+
+			local result = scheduler.runThread(thread, args)
+
+			if result then
+				scheduler.results[thread] = result
 			end
 		end
 
