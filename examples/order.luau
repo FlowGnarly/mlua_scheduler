@@ -43,8 +43,6 @@ local thread2 = task.spawn(function()
 	printDebug("Finished waiting")
 end)
 
-coroutine.close(thread2)
-
 printDebug("Waiting for 0.5 seconds")
 
 task.delay(2, function()
@@ -54,3 +52,5 @@ end)
 task.wait(0.5)
 
 printDebug(`Canceled thread {threads[thread2]}`)
+
+coroutine.close(thread2)
