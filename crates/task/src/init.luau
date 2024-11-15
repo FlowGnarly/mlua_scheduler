@@ -13,21 +13,34 @@ type ThreadResult = {
 	msg: string,
 }
 
+function scheduler.removeThread(thread: thread): boolean
+	local index = table.find(scheduler.threads, thread)
+
+	if index then
+		table.remove(scheduler.threads, index)
+	end
+
+	return if index then true else false
+end
+
 function scheduler.runThread(thread: thread, ...: unknown): ()
 	if coroutine.status(thread) == "dead" then
+		scheduler.removeThread(thread)
+
+		return error("cannot resume dead coroutine", 0)
+	end
+
+	local success, result = coroutine.resume(thread, ...)
+
+	if result == pending then
+		-- thread is still polling
+		return
+	else
 		local index = table.find(scheduler.threads, thread)
 
 		if index then
 			table.remove(scheduler.threads, index)
 		end
-
-		return
-	end
-
-	local success, result = coroutine.resume(thread, ...)
-
-	if coroutine.status(thread) ~= "dead" then
-		return
 	end
 
 	if success == true then
@@ -85,19 +98,12 @@ return {
 	coroutine = {},
 
 	run = function(): boolean
-		for thread, result in scheduler.results do
-			local index = table.find(scheduler.threads, thread)
-
-			if index then
-				table.remove(scheduler.threads, index)
-
-				if result.success == false then
-					print(result.msg)
-				end
-			end
-		end
-
 		for _, thread in scheduler.threads do
+			if coroutine.status(thread) == "dead" then
+				scheduler.removeThread(thread)
+				continue
+			end
+
 			local args: { unknown }?
 
 			if scheduler.args[thread] then
@@ -106,6 +112,12 @@ return {
 			end
 
 			scheduler.runThread(thread, args)
+		end
+
+		for thread, result in scheduler.results do
+			if result.success == false then
+				print(result.msg)
+			end
 		end
 
 		return #scheduler.threads > 0
