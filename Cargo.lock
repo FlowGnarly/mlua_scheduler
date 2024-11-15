@@ -473,6 +473,7 @@ name = "mlua_scheduler"
 version = "2.0.0"
 dependencies = [
  "mlua",
+ "mlua_task_library",
  "smol",
 ]
 
@@ -483,7 +484,15 @@ dependencies = [
  "clap",
  "mlua",
  "mlua_scheduler",
+ "mlua_task_library",
  "smol",
+]
+
+[[package]]
+name = "mlua_task_library"
+version = "1.0.0"
+dependencies = [
+ "mlua",
 ]
 
 [[package]]

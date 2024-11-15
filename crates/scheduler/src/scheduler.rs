@@ -1,21 +1,18 @@
+use mlua_task_library::TaskScheduler;
 use smol::Executor;
 
 #[derive(Debug)]
 pub struct Scheduler {
     pub executor: Executor<'static>,
-}
-
-impl Default for Scheduler {
-    fn default() -> Self {
-        Self {
-            executor: Executor::new(),
-        }
-    }
+    pub task: TaskScheduler,
 }
 
 impl Scheduler {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(lua: &mlua::Lua) -> mlua::Result<Self> {
+        Ok(Self {
+            executor: Executor::new(),
+            task: TaskScheduler::new(lua)?,
+        })
     }
 
     pub async fn run(&self) -> mlua::Result<()> {
@@ -26,7 +23,7 @@ impl Scheduler {
                 }
             }
 
-            if self.executor.is_empty() {
+            if self.executor.is_empty() && !self.task.run()? {
                 break;
             };
         }

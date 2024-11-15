@@ -8,5 +8,6 @@ mlua = { version = "0.10.0", features = ["luau", "async", "send"] }
 smol = "2.0.2"
 
 mlua_scheduler = { version = "2.0.0", path = "../scheduler" }
+mlua_task_library = { version = "1.0.0", path = "../task" }
 
 clap = { version = "4.5.20", features = ["derive"] }

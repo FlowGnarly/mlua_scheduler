@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 mlua = { version = "0.10.0", features = ["luau", "async", "send"] }
 smol = "2.0.2"
+
+mlua_task_library = { version = "1.0.0", path = "../task" }
