@@ -47,6 +47,14 @@ function task.spawn(f: thread | (...unknown) -> ...unknown): thread
 	return thread
 end
 
+function task.defer(f: thread | (...unknown) -> ...unknown): thread
+	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
+
+	table.insert(scheduler.threads, thread)
+
+	return thread
+end
+
 local printedResults: { thread } = {}
 
 return {
