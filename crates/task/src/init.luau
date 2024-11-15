@@ -50,6 +50,8 @@ function scheduler.runThread(thread: thread, ...: unknown): ()
 			success = false,
 			msg = result,
 		}
+
+		print(`custom error: {debug.traceback(result, 3)}`)
 	end
 end
 
@@ -116,12 +118,6 @@ return {
 			end
 
 			scheduler.runThread(thread, args)
-		end
-
-		for thread, result in scheduler.results do
-			if result.success == false then
-				print(result.msg)
-			end
 		end
 
 		return #scheduler.threads > 0
