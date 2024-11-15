@@ -93,6 +93,10 @@ function task.delay(secs: number, f: thread | (...unknown) -> ...unknown, ...: u
 	end)
 end
 
+function task.cancel(thread: thread): ()
+	scheduler.removeThread(thread)
+end
+
 return {
 	task = task,
 	coroutine = {},
