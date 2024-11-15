@@ -3,8 +3,8 @@ local task = task or require("@lune/task")
 
 local started = os.clock()
 
-local amount = 1000
-local batches = 5
+local amount = 100000
+local batches = 10
 local per_batch = amount / batches
 
 local threads = {}
