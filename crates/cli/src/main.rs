@@ -10,7 +10,7 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
     let lua = mlua::Lua::new();
-    let scheduler = Scheduler::new().setup(&lua);
+    let scheduler = Scheduler::new();
 
     lua.globals()
         .set("_OS", OS.to_lowercase())

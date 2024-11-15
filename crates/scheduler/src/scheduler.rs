@@ -1,5 +1,4 @@
 use smol::Executor;
-use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Scheduler {
@@ -17,12 +16,6 @@ impl Default for Scheduler {
 impl Scheduler {
     pub fn new() -> Self {
         Self::default()
-    }
-
-    pub fn setup(self, lua: &mlua::Lua) -> Arc<Self> {
-        let arc = Arc::new(self);
-        lua.set_app_data(Arc::clone(&arc));
-        arc
     }
 
     pub async fn run(&self) -> mlua::Result<()> {
