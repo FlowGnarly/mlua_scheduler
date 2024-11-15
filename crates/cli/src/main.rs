@@ -37,7 +37,9 @@ fn main() -> mlua::Result<()> {
     })
     .fallible();
 
-    smol::block_on(scheduler_task);
+    if let Err(err) = smol::block_on(scheduler_task).expect("Scheduler failed unexpectedly") {
+        eprintln!("{err}");
+    };
 
     Ok(())
 }
