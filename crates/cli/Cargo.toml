@@ -7,7 +7,6 @@ edition = "2021"
 mlua = { version = "0.10.0", features = ["luau", "async", "send"] }
 smol = "2.0.2"
 
-mlua_scheduler = { version = "1.0.0", path = "../scheduler" }
-mlua_task_std = { version = "1.0.0", path = "../task-std" }
+mlua_scheduler = { version = "2.0.0", path = "../scheduler" }
 
 clap = { version = "4.5.20", features = ["derive"] }
