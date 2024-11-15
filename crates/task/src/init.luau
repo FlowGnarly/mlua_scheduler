@@ -1,6 +1,7 @@
 --!strict
 local scheduler = {
 	threads = {} :: { thread },
+	args = {} :: { [thread]: { unknown } },
 	results = {} :: { [thread]: ThreadResult },
 }
 
@@ -32,13 +33,13 @@ end
 
 local task = {}
 
-function task.spawn(f: thread | (...unknown) -> ...unknown): thread
+function task.spawn(f: thread | (...unknown) -> ...unknown, ...: unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
 
 	table.insert(scheduler.threads, thread)
 
 	-- run immediately
-	local result = scheduler.runThread(thread)
+	local result = scheduler.runThread(thread, ...)
 
 	if result then
 		scheduler.results[thread] = result
@@ -47,10 +48,11 @@ function task.spawn(f: thread | (...unknown) -> ...unknown): thread
 	return thread
 end
 
-function task.defer(f: thread | (...unknown) -> ...unknown): thread
+function task.defer(f: thread | (...unknown) -> ...unknown, ...: unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
 
 	table.insert(scheduler.threads, thread)
+	scheduler.args[thread] = { ... }
 
 	return thread
 end
@@ -63,7 +65,12 @@ return {
 
 	run = function(): boolean
 		for _, thread in scheduler.threads do
-			scheduler.runThread(thread)
+			if scheduler.args[thread] then
+				scheduler.runThread(thread, scheduler.args[thread])
+				scheduler.args[thread] = nil
+			else
+				scheduler.runThread(thread, scheduler.args[thread])
+			end
 		end
 
 		for thread, result in scheduler.results do
