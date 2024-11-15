@@ -20,6 +20,8 @@ impl TaskScheduler {
             env.set(k, v)?;
         }
 
+        env.set("pending", Lua::poll_pending())?;
+
         env.set(
             "wait",
             lua.create_async_function(|_, time: Option<f64>| async move {
