@@ -13,21 +13,23 @@ type ThreadResult = {
 	msg: string,
 }
 
-function scheduler.runThread(thread: thread, ...: unknown): ThreadResult?
+function scheduler.runThread(thread: thread, ...: unknown): ()
 	local success, result = coroutine.resume(thread, ...)
 
-	if success == true and coroutine.status(thread) == "dead" then
-		return {
+	if coroutine.status(thread) ~= "dead" then
+		return
+	end
+
+	if success == true then
+		scheduler.results[thread] = {
 			success = true,
 			value = result,
 		}
 	elseif success == false then
-		return {
+		scheduler.results[thread] = {
 			success = false,
 			msg = result,
 		}
-	else
-		return nil
 	end
 end
 
@@ -39,11 +41,7 @@ function task.spawn(f: thread | (...unknown) -> ...unknown, ...: unknown): threa
 	table.insert(scheduler.threads, thread)
 
 	-- run immediately
-	local result = scheduler.runThread(thread, ...)
-
-	if result then
-		scheduler.results[thread] = result
-	end
+	scheduler.runThread(thread, ...)
 
 	return thread
 end
@@ -82,11 +80,7 @@ return {
 				args = scheduler.args[thread]
 			end
 
-			local result = scheduler.runThread(thread, args)
-
-			if result then
-				scheduler.results[thread] = result
-			end
+			scheduler.runThread(thread, args)
 		end
 
 		return #scheduler.threads > 0
