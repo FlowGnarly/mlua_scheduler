@@ -53,6 +53,6 @@ return {
 	coroutine = {},
 
 	run = function(): boolean
-		return false
+		return #scheduler.spawnedThreads > 0 or #scheduler.deferredThreads > 0
 	end,
 }
