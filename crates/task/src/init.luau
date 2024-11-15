@@ -1,7 +1,6 @@
 --!strict
 local scheduler = {
-	spawnedThreads = {},
-	deferredThreads = {},
+	threads = {} :: { thread },
 	results = {} :: { [thread]: ThreadResult },
 }
 
@@ -36,7 +35,7 @@ local task = {}
 function task.spawn(f: thread | (...unknown) -> ...unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
 
-	table.insert(scheduler.spawnedThreads, thread)
+	table.insert(scheduler.threads, thread)
 
 	-- run immediately
 	local result = scheduler.runThread(thread)
@@ -53,6 +52,10 @@ return {
 	coroutine = {},
 
 	run = function(): boolean
-		return #scheduler.spawnedThreads > 0 or #scheduler.deferredThreads > 0
+		for _, thread in scheduler.threads do
+			scheduler.runThread(thread)
+		end
+
+		return #scheduler.threads > 0
 	end,
 }
