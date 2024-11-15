@@ -99,7 +99,10 @@ end
 
 return {
 	task = task,
-	coroutine = {},
+	coroutine = {
+		close = task.cancel,
+		resume = task.spawn,
+	},
 
 	run = function(): boolean
 		for _, thread in scheduler.threads do
