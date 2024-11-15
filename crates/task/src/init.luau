@@ -14,6 +14,16 @@ type ThreadResult = {
 }
 
 function scheduler.runThread(thread: thread, ...: unknown): ()
+	if coroutine.status(thread) == "dead" then
+		local index = table.find(scheduler.threads, thread)
+
+		if index then
+			table.remove(scheduler.threads, index)
+		end
+
+		return
+	end
+
 	local success, result = coroutine.resume(thread, ...)
 
 	if coroutine.status(thread) ~= "dead" then
