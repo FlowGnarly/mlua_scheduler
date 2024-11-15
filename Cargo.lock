@@ -493,6 +493,7 @@ name = "mlua_task_library"
 version = "1.0.0"
 dependencies = [
  "mlua",
+ "smol",
 ]
 
 [[package]]

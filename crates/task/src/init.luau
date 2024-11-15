@@ -55,6 +55,10 @@ function task.defer(f: thread | (...unknown) -> ...unknown, ...: unknown): threa
 	return thread
 end
 
+function task.wait(secs: number?)
+	wait(secs)
+end
+
 return {
 	task = task,
 	coroutine = {},
