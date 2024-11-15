@@ -57,13 +57,23 @@ function task.defer(f: thread | (...unknown) -> ...unknown, ...: unknown): threa
 	return thread
 end
 
-local printedResults: { thread } = {}
-
 return {
 	task = task,
 	coroutine = {},
 
 	run = function(): boolean
+		for thread, result in scheduler.results do
+			local index = table.find(scheduler.threads, thread)
+
+			if index then
+				table.remove(scheduler.threads, index)
+
+				if result.success == false then
+					print(result.msg)
+				end
+			end
+		end
+
 		for _, thread in scheduler.threads do
 			local args: { unknown }?
 
@@ -76,13 +86,6 @@ return {
 
 			if result then
 				scheduler.results[thread] = result
-			end
-		end
-
-		for thread, result in scheduler.results do
-			if result.success == false and not table.find(printedResults, thread) then
-				table.insert(printedResults, thread)
-				print(result.msg)
 			end
 		end
 
