@@ -24,13 +24,15 @@ function scheduler.removeThread(thread: thread): boolean
 	return if index then true else false
 end
 
-function scheduler.runThread(thread: thread, ...: unknown): ()
+function scheduler.validateThread(thread: thread): ()
 	if coroutine.status(thread) == "dead" then
 		scheduler.removeThread(thread)
 
 		return error("cannot resume dead coroutine", 0)
 	end
+end
 
+function scheduler.runThread(thread: thread, ...: unknown): ()
 	local success, result = co_resume(thread, ...)
 
 	if result == pending then
@@ -60,6 +62,8 @@ local task = {}
 function task.spawn(f: thread | (...unknown) -> ...unknown, ...: unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
 
+	scheduler.validateThread(thread)
+
 	table.insert(scheduler.threads, thread)
 
 	-- run immediately
@@ -70,6 +74,8 @@ end
 
 function task.defer(f: thread | (...unknown) -> ...unknown, ...: unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
+
+	scheduler.validateThread(thread)
 
 	table.insert(scheduler.threads, thread)
 	scheduler.args[thread] = { ... }
@@ -83,6 +89,8 @@ end
 
 function task.delay(secs: number, f: thread | (...unknown) -> ...unknown, ...: unknown): thread
 	local thread = if typeof(f) == "thread" then f else coroutine.create(f)
+
+	scheduler.validateThread(thread)
 
 	scheduler.args[thread] = { ... }
 
