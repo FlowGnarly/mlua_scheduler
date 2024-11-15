@@ -37,11 +37,7 @@ function scheduler.runThread(thread: thread, ...: unknown): ()
 		-- thread is still polling
 		return
 	else
-		local index = table.find(scheduler.threads, thread)
-
-		if index then
-			table.remove(scheduler.threads, index)
-		end
+		scheduler.removeThread(thread)
 	end
 
 	if success == true then
